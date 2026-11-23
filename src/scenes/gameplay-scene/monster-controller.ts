@@ -15,11 +15,11 @@ export class MonsterController {
   private unsubscribeAnimationRequest: () => void;
   private timeoutRegistry: TimeoutRegistry = new TimeoutRegistry();
 
-  private animationDelays = [
-    { backToIdle: 350, isChewing: 0, isHappy: 1700, isSpit: 1500, isSad: 3000 },
-    { backToIdle: 350, isChewing: 0, isHappy: 1700, isSpit: 1000, isSad: 2500 },
-    { backToIdle: 350, isChewing: 0, isHappy: 1700, isSpit: 1300, isSad: 2600 },
-    { backToIdle: 350, isChewing: 0, isHappy: 1700, isSpit: 1500, isSad: 3000 }
+private animationDelays = [
+    { backToIdle: 300, isChewing: 0, isHappy: 1500, isSpit: 1200, isSad: 400 },
+    { backToIdle: 300, isChewing: 0, isHappy: 1500, isSpit: 800, isSad: 400 },
+    { backToIdle: 300, isChewing: 0, isHappy: 1500, isSpit: 1000, isSad: 400 },
+    { backToIdle: 300, isChewing: 0, isHappy: 1500, isSpit: 1200, isSad: 400 }
   ];
   // #endregion
 
@@ -81,8 +81,8 @@ export class MonsterController {
 
   public playFailureAnimation(): void {
     this.triggerMonsterAnimation('isChewing');
-    this.triggerMonsterAnimation('isSpit');
     this.triggerMonsterAnimation('isSad');
+    this.triggerMonsterAnimation('isSpit');
   }
 
   public triggerMonsterAnimation(animationName: string): void {

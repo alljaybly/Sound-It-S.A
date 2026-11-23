@@ -70,11 +70,18 @@ export default class FeedbackAudioHandler {
 
   /**
    * Plays audio for an incorrect answer
+   * Plays the disappointed/wrong answer sound FIRST, then triggers monster spit animation
+   * The monster spit animation and sound are handled by the monster controller via playFailureAnimation()
    */
   private playIncorrectFeedbackSound(): void {
+    // Play the disappointed/wrong answer sound effect immediately
+    this.audioPlayer.playAudio(RiveMonsterComponent.DISAPPOINTED_SFX_AUDIO);
+    
+    // Then after a short delay to let the wrong answer sound start, advance the puzzle
+    // The monster spit animation (with its own sound) is triggered separately by playFailureAnimation()
     this.timeoutRegistry.setTimeout(() => {
         this.audioEndCallback();
-    }, 1700); // 1700ms is tailored to handleStoneDropEnd 1000 delay of isSpit animation
+    }, 1700); // 1700ms allows the disappointed sound to play before advancing
   }
 
   /**
@@ -85,22 +92,16 @@ export default class FeedbackAudioHandler {
     try {
       // Play feedback audio in parallel for better performance
       const randomNumber = Utils.getRandomNumber(1, 3).toString();
-      await Promise.allSettled([
-        this.correctStoneAudio.play(),
-        this.audioPlayer.playAudioQueue(
-          false,
-          AUDIO_PATH_CHEERING_FUNC(randomNumber),
-          AUDIO_PATH_POINTS_ADD,
-          Utils.getConvertedDevProdURL(this.feedbackAudios[feedBackIndex])
-        )
-      ]);
-      this.timeoutRegistry.setTimeout(() => {
-        this.audioEndCallback(); // Callback after audios finish playing
-      }, 4000);
+      this.correctStoneAudio.play();
+      this.audioPlayer.playAudioQueueWithCallback(
+        false,
+        () => this.audioEndCallback(),
+        AUDIO_PATH_CHEERING_FUNC(randomNumber),
+        AUDIO_PATH_POINTS_ADD,
+        Utils.getConvertedDevProdURL(this.feedbackAudios[feedBackIndex])
+      );
     } catch (error) {
-      this.timeoutRegistry.setTimeout(() => {
-        this.audioEndCallback(); // Ensure callback is called even if audio fails
-      }, 4000); 
+      this.audioEndCallback();
       console.warn('Audio playback failed:', error);
     }
   }

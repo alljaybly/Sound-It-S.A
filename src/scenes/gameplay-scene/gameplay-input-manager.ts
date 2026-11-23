@@ -28,6 +28,7 @@ export class GameplayInputManager {
     private animationFrameId: number | null = null;
     private isMonsterMouthOpen: boolean = false;
     private isDragging: boolean = false;
+    private isInputEnabled: boolean = true;
     private pickedStone: StoneConfig | null = null;
     private pickedStoneObject: StoneConfig | null = null;
     // #endregion
@@ -60,6 +61,11 @@ export class GameplayInputManager {
         element.removeEventListener(TOUCHEND, this.handleTouchEnd, false);
     }
 
+    public setInputEnabled(enabled: boolean): void {
+        this.isInputEnabled = enabled;
+        if (!enabled) this.resetDragState();
+    }
+
     public getPickedStone(): StoneConfig | null {
         return this.pickedStone;
     }
@@ -81,6 +87,7 @@ export class GameplayInputManager {
 
     // #region Event Handlers
     private handleMouseUp = (event: MouseEvent | any): void => {
+        if (!this.isInputEnabled) return;
         if (this.animationFrameId !== null) {
             cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
@@ -114,6 +121,7 @@ export class GameplayInputManager {
     }
 
     private handleMouseDown = (event: MouseEvent | any): void => {
+        if (!this.isInputEnabled) return;
         if (this.pickedStone && this.pickedStone.isAnimating) {
             return;
         }
@@ -135,6 +143,7 @@ export class GameplayInputManager {
     }
 
     private handleMouseMove = (event: MouseEvent | any): void => {
+        if (!this.isInputEnabled) return;
         this.lastClientX = event.clientX;
         this.lastClientY = event.clientY;
 
@@ -144,6 +153,7 @@ export class GameplayInputManager {
     }
 
     private handleMouseClick = (event: MouseEvent): void => {
+        if (!this.isInputEnabled) return;
         let rect = this.canvas.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -154,6 +164,7 @@ export class GameplayInputManager {
     }
 
     private handleTouchStart = (event: TouchEvent): void => {
+        if (!this.isInputEnabled) return;
         if (this.pickedStone && this.pickedStone.isAnimating) {
             return;
         }
@@ -162,13 +173,14 @@ export class GameplayInputManager {
     }
 
     private handleTouchMove = (event: TouchEvent): void => {
-        if (!this.pickedStone) return;
+        if (!this.isInputEnabled || !this.pickedStone) return;
         event.preventDefault();
         const touch = event.touches[0];
         this.handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
     }
 
     private handleTouchEnd = (event: TouchEvent): void => {
+        if (!this.isInputEnabled) return;
         const touch = event.changedTouches[0];
         this.handleMouseUp({ clientX: touch.clientX, clientY: touch.clientY });
     }

@@ -1,0 +1,16 @@
+{
+  "id": "unk_f1f9f5c9771cd89f",
+  "revision": 1,
+  "question": "Do the existing South African English vowel audio clips contain short vowel sounds, and is there a verified standalone /æ/ clip to replace the current a audio?",
+  "severity": "high",
+  "domain": "audio-content",
+  "status": "open",
+  "probes": [
+    "Listen to the South African English a/e/i/o/u prompt clips and confirm their pronunciations.",
+    "Locate an attributed, licensed South African English /æ/ phoneme recording or source."
+  ],
+  "evidence_for": [
+    "Local South African English audio directory contains a.mp3 and local word clips including cat.mp3; filenames don't establish pronunciation."
+  ],
+  "evidence_against": []
+}

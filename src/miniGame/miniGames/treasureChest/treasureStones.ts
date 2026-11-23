@@ -344,4 +344,18 @@ export default class TreasureStones {
       );
     }
   }
+
+  /**
+   * Pauses the stones animation and audio.
+   */
+  public pause(): void {
+    this.audioPlayer?.pauseAllAudios();
+  }
+
+  /**
+   * Resumes the stones animation and audio.
+   */
+  public resume(): void {
+    this.audioPlayer?.resumeAllAudios();
+  }
 }

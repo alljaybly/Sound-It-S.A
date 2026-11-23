@@ -109,6 +109,22 @@ export class TreasureChestMiniGame {
     this.treasureAnimation.draw(deltaTime);
   }
 
+  /**
+   * Pauses the mini-game (animations and audio).
+   */
+  public pause(): void {
+    this.treasureAnimation.pause();
+    this.treasureStones.pause();
+  }
+
+  /**
+   * Resumes the mini-game (animations and audio).
+   */
+  public resume(): void {
+    this.treasureAnimation.resume();
+    this.treasureStones.resume();
+  }
+
   //Called before moving to level-end scene. This is handled and used by mini game handler.
   public dispose() {
     this.earnedStarCount = 0;

@@ -130,7 +130,8 @@ export class GameplayFlowManager {
         }
 
         //Delay before either next puzzle, assessment or mini-game starts to avoid overlapping with feedback SFX.
-        const nextStepDelay = this.isCorrect ? 1500 : 3000;
+        // Increased from 1500ms to 4500ms to allow "Fantastic/Great/Amazing" voice audio to complete fully
+        const nextStepDelay = this.isCorrect ? 4500 : 3000;
         // Wait for feedback audio to finish (~4500 ms) plus 1 s before opening the assessment survey.
         const assessmentDelay = this.isCorrect ? 5500 : 3000;
 

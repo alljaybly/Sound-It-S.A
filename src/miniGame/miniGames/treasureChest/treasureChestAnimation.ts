@@ -262,6 +262,22 @@ export class TreasureChestAnimation {
   }
 
   /**
+   * Pauses the animation and audio.
+   */
+  public pause(): void {
+    this.audioPlayer?.pauseAllAudios();
+    this.sfxPlayer?.pauseAllAudios();
+  }
+
+  /**
+   * Resumes the animation and audio.
+   */
+  public resume(): void {
+    this.audioPlayer?.resumeAllAudios();
+    this.sfxPlayer?.resumeAllAudios();
+  }
+
+  /**
    * Main animation loop.
    * Runs via requestAnimationFrame while visible.
    */

@@ -1,0 +1,12 @@
+{"caller":"ui","duration_ms":1,"kind":"tool_call","ok":true,"params":{},"time":"2026-11-23T06:00:21Z","tool":"project_pins_list","ts":1795413621}
+{"caller":"ui","duration_ms":1,"kind":"tool_call","ok":true,"params":{},"time":"2026-11-23T06:02:14Z","tool":"project_pins_list","ts":1795413734}
+{"caller":"ui","duration_ms":1,"kind":"tool_call","ok":true,"params":{},"time":"2026-11-23T06:06:44Z","tool":"project_pins_list","ts":1795414004}
+{"caller":"ui","duration_ms":1,"kind":"tool_call","ok":true,"params":{},"time":"2026-11-23T06:07:43Z","tool":"project_pins_list","ts":1795414063}
+{"kind":"user_message","text":"Your last run stopped before it finished (it was paused, or the app or the computer stopped). Everything you made so far is in app/. Pick up where you left off: see what's done and what's left (your checklist and core_unknowns_show), finish the task, then build it again, fix any errors. Craft Anything checks your build after your turn. Reply with 1-3 plain sentences on what you did.","time":"2026-11-23T06:07:51Z","ts":1795414071}
+{"caller":"agent","duration_ms":40,"kind":"tool_call","ok":true,"params":{},"time":"2026-11-23T06:07:51Z","tool":"core_investigation_show","ts":1795414071}
+{"backend":"Gemini (Google AI Studio)","code":"engine_missing","kind":"error","message":"Gemini answered 503: This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.","time":"2026-11-23T06:08:06Z","ts":1795414086}
+{"caller":"ui","duration_ms":1,"kind":"tool_call","ok":true,"params":{},"time":"2026-11-23T06:08:33Z","tool":"project_pins_list","ts":1795414113}
+{"caller":"ui","duration_ms":7,"kind":"tool_call","ok":true,"params":{},"time":"2026-11-23T06:09:36Z","tool":"project_pins_list","ts":1795414176}
+{"kind":"user_message","text":"Your last run stopped before it finished (it was paused, or the app or the computer stopped). Everything you made so far is in app/. Pick up where you left off: see what's done and what's left (your checklist and core_unknowns_show), finish the task, then build it again, fix any errors. Craft Anything checks your build after your turn. Reply with 1-3 plain sentences on what you did.","time":"2026-11-23T06:09:43Z","ts":1795414183}
+{"caller":"agent","duration_ms":0,"kind":"tool_call","ok":true,"params":{},"time":"2026-11-23T06:09:43Z","tool":"core_investigation_show","ts":1795414183}
+{"caller":"ui","duration_ms":1,"kind":"tool_call","ok":true,"params":{},"time":"2026-11-23T06:38:33Z","tool":"project_pins_list","ts":1795415913}

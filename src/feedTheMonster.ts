@@ -86,7 +86,11 @@ class App {
     await AnalyticsIntegration.initializeAnalytics();
     this.analyticsIntegration = AnalyticsIntegration.getInstance();
     const font = await Utils.getLanguageSpecificFont(this.lang);
-    await this.loadAndCacheFont(font, `./assets/fonts/${font}.ttf`);
+    if (font === "Playwrite ZA") {
+      await document.fonts.load('16px "Playwrite ZA"').catch(() => []);
+    } else {
+      await this.loadAndCacheFont(font, `./assets/fonts/${font}.ttf`);
+    }
     await this.loadTitleFeedbackCustomFont();
     await this.preloadGameAudios();
     // Strip the leading "v" (e.g. "v1.5.1" -> "1.5.1") so Statsig's App Version
@@ -139,7 +143,11 @@ class App {
     const customTitleFeedbackFont = customFonts[this.lang] || customFonts.default;
     const fontFamily = `'${customTitleFeedbackFont}', sans-serif`;
 
-    await this.loadAndCacheFont(customTitleFeedbackFont, `./assets/fonts/${customTitleFeedbackFont}.ttf`);
+    if (customTitleFeedbackFont === "Playwrite ZA") {
+      await document.fonts.load('16px "Playwrite ZA"').catch(() => []);
+    } else {
+      await this.loadAndCacheFont(customTitleFeedbackFont, `./assets/fonts/${customTitleFeedbackFont}.ttf`);
+    }
     [this.titleTextElement, this.feedBackTextElement].forEach(element => {
       if (element) {
         element.style.fontFamily = fontFamily;

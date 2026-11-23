@@ -15,6 +15,7 @@ export class AudioPlayer {
   private nonPausableAudioContext: AudioContext | null;
   private sourceNode: AudioBufferSourceNode | null;
   private audioQueue: string[];
+  private audioQueueOnComplete: (() => void) | null = null;
 
   private promptAudioBuffer: AudioBuffer | null;
   private clickSoundBuffer: AudioBuffer | null;
@@ -24,6 +25,12 @@ export class AudioPlayer {
   private playAudioTimeoutId: TimerId | null;
   private isPromptAudioPlaying: boolean;
   private timeoutRegistry: TimeoutRegistry = new TimeoutRegistry();
+  
+  // Volume settings (0.0 to 1.0) - Adjusted based on user reviews
+  public voiceVolume: number = 1.0;      // For "Fantastic", "Great", "Amazing" voice feedback
+  public sfxVolume: number = 0.6;        // For sound effects (spit, eat, disappointed, etc.)
+  public bgmVolume: number = 0.3;        // For background music
+  public uiVolume: number = 0.7;         // For UI sounds (button clicks)
 
   constructor() {
     if( AudioPlayer.instance )
@@ -132,9 +139,54 @@ export class AudioPlayer {
   }
 
   /**
+   * Determines the appropriate volume for an audio source based on its path/type.
+   * @param audioSrc - The source path of the audio.
+   * @param explicitVolume - Explicitly provided volume (overrides auto-detection).
+   * @returns The volume level to use.
+   */
+  private getVolumeForAudio(audioSrc: string, explicitVolume: number): number {
+    // If explicit volume is provided (not default 1), use it
+    if (explicitVolume !== 1) {
+      return explicitVolume;
+    }
+
+    // Auto-detect audio type from path
+    const src = audioSrc.toLowerCase();
+    
+    // Voice feedback (Fantastic, Great, Amazing) - highest priority
+    if (src.includes('fantastic') || src.includes('great') || src.includes('amazing')) {
+      return this.voiceVolume;
+    }
+    
+    // Background music / level intro/win/lose
+    if (src.includes('intro') || src.includes('levelwin') || src.includes('levellose') || 
+        src.includes('minigame') || src.includes('treasure_minigame') || src.includes('cheering')) {
+      return this.bgmVolume;
+    }
+    
+    // Sound effects (monster sounds, UI sounds, etc.)
+    if (src.includes('monster') || src.includes('spit') || src.includes('eat') || 
+        src.includes('disappointed') || src.includes('burn') || src.includes('shine') ||
+        src.includes('matchbox') || src.includes('swoosh') || src.includes('jar_filling') ||
+        src.includes('stone_burn') || src.includes('poof') || src.includes('evolve') ||
+        src.includes('pointsadd') || src.includes('ondrag') || src.includes('timeout') ||
+        src.includes('surprise') || src.includes('bonus')) {
+      return this.sfxVolume;
+    }
+    
+    // UI sounds (button clicks)
+    if (src.includes('button') || src.includes('click')) {
+      return this.uiVolume;
+    }
+    
+    // Default to SFX volume for unrecognized
+    return this.sfxVolume;
+  }
+
+  /**
    * Plays a game audio effect (pausable).
    * @param audioSrc - The source path or identifier of the audio to play.
-   * @param volume - The volume level (default: 1).
+   * @param volume - The volume level (default: 1, which triggers auto-detection).
    * @param onEnded - Optional callback to execute when audio playback ends.
    * @returns The created AudioBufferSourceNode if successful, or null.
    */
@@ -157,7 +209,9 @@ export class AudioPlayer {
         sourceNode.onended = () => this.removeSourceNode(sourceNode);
       }
 
-      gainNode.gain.value = volume; // Set volume (1 = full, 0.5 = half, etc.)
+      // Auto-detect volume based on audio type if using default
+      const actualVolume = this.getVolumeForAudio(audioSrc, volume);
+      gainNode.gain.value = actualVolume;
 
       this.audioSourcs.push(sourceNode);
       sourceNode.start();
@@ -213,8 +267,17 @@ export class AudioPlayer {
    * @param fileUrl - Variable number of audio file URLs to play.
    */
   playAudioQueue = (loop: boolean = false, ...fileUrl: string[]): void => {
+    this.playAudioQueueWithCallback(loop, null, ...fileUrl);
+  };
+
+  playAudioQueueWithCallback = (
+    loop: boolean,
+    onComplete: (() => void) | null,
+    ...fileUrl: string[]
+  ): void => {
     if (fileUrl.length > 0) {
       this.audioQueue = fileUrl;
+      this.audioQueueOnComplete = onComplete;
       this.playFetch(0, loop);
     }
   };
@@ -310,6 +373,7 @@ export class AudioPlayer {
    * Stops and clears the currently playing feedback audio sequence.
    */
   stopFeedbackAudio = (): void => {
+    this.audioQueueOnComplete = null;
     if (this.sourceNode) {
       this.sourceNode.stop();
       this.sourceNode = null;
@@ -321,6 +385,7 @@ export class AudioPlayer {
    * Stops all currently playing audio sources, including feedback and queued sounds.
    */
   stopAllAudios = () => {
+    this.audioQueueOnComplete = null;
     if (this.sourceNode) {
       this.sourceNode.stop();
       this.sourceNode = null;
@@ -362,18 +427,33 @@ export class AudioPlayer {
    */
   private playFetch = (index: number, loop: boolean) => {
     if (index >= this.audioQueue.length) {
+      const onComplete = this.audioQueueOnComplete;
+      this.audioQueueOnComplete = null;
       this.stopFeedbackAudio();
+      onComplete?.();
       return;
     }
 
     if (this.audioQueue[index]) {
-      fetch(this.audioQueue[index])
+      const audioSrc = this.audioQueue[index];
+      fetch(audioSrc)
         .then((response) => response.arrayBuffer())
         .then((buffer) => {
           this.audioContext?.decodeAudioData(buffer, (audioBuffer) => {
             this.sourceNode = this.audioContext?.createBufferSource();
             this.sourceNode.buffer = audioBuffer;
-            this.sourceNode.connect(this.audioContext?.destination);
+            
+            // Use gain node for volume control
+            const gainNode = this.audioContext?.createGain();
+            this.sourceNode.connect(gainNode);
+            gainNode?.connect(this.audioContext?.destination);
+            
+            // Apply auto-detected volume
+            const actualVolume = this.getVolumeForAudio(audioSrc, 1);
+            if (gainNode) {
+              gainNode.gain.value = actualVolume;
+            }
+            
             this.sourceNode.loop = loop;
             this.sourceNode.onended = () => this.handleAudioEnded(index, loop);
             this.sourceNode.start();

@@ -78,6 +78,20 @@ export class MiniGameHandler {
     this.activeMiniGame?.update(deltaTime);
   }
 
+  /**
+   * Pauses the active mini-game (animations and audio).
+   */
+  public pause(): void {
+    this.activeMiniGame?.pause();
+  }
+
+  /**
+   * Resumes the active mini-game (animations and audio).
+   */
+  public resume(): void {
+    this.activeMiniGame?.resume();
+  }
+
   private handleMiniGameComplete(earnedStarCount: number) {
 
     // ADD logic here relating to star count.

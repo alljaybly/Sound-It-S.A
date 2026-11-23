@@ -348,6 +348,8 @@ export class GameplayScene {
     this.isPaused = false;
     this.audioPlayer?.resumeAllAudios();
     this.monsterController?.resume();
+    // Also resume mini-game if it's active
+    this.miniGameHandler?.resume();
   }
 
   public pauseGamePlay(): void {
@@ -368,6 +370,8 @@ export class GameplayScene {
     // Stop the clock rotation when gameplay is suspended
     this.uiManager.applyTimerRotation(false);
     this.monsterController?.pause();
+    // Also pause mini-game if it's active
+    this.miniGameHandler?.pause();
   }
   // #endregion
 
@@ -468,6 +472,7 @@ export class GameplayScene {
   }
 
   private handlePuzzleInit(): void {
+    this.inputManager.setInputEnabled(true);
     this.timerStartSFXPlayed = false;
     this.time = 0;
     this.isGameStarted = false;
@@ -504,6 +509,9 @@ export class GameplayScene {
   }
 
   private handleUITimerEnded(): void {
+    // Immediately disable all input when timer ends to prevent continued clicking
+    this.inputManager.setInputEnabled(false);
+    // Also reset any ongoing drag state
     this.inputManager.resetDragState();
   }
 
